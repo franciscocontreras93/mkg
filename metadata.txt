@@ -8,12 +8,12 @@ qgisMinimumVersion=3.0
 description=Conjunto de Herramientas para el Procesado de Información Geoestadisitica 
 version=0.1
 author=Francisco Contreras, GeoSIG
-email=Francisco Contreras93@gmail.com
+email=Franciscocontreras93@gmail.com
 
 about=Provide a brief description of the plugin and its purpose.
 
 tracker=http://bugs
-repository=http://repo
+repository=https://github.com/franciscocontreras93/mkg.git
 # End of mandatory metadata
 
 # Recommended items:
@@ -25,7 +25,7 @@ hasProcessingProvider=no
 # Tags are comma separated with spaces allowed
 tags=python
 
-homepage=http://homepage
+homepage=https://github.com/franciscocontreras93/mkg.git
 category=Plugins
 icon=icon.png
 # experimental flag

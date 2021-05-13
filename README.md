@@ -1,10 +1,8 @@
-# QGIS Minimalist Plugin Skeleton
+# Marketing Group Plugin
 
-In various QGIS plugin tutorials you are told to use _Plugin Builder_ tool to create a skeleton for your plugin.
-It is surely helpful as it helps you kickstart your plugin with stuff like UI designer file, auto tests, docs, i18n, scripts and so on.
+Complemento desarrollado por GeoSIG Consultoria. Para uso interno del proyecto Ofrecido a MarketingGroup Mexico. 
 
-This QGIS plugin is the complete opposite of a plugin built with _Plugin Builder_: it is a plugin skeleton cut down
-to the bare minimum that still results in a valid QGIS plugin. It consists of two files only: a text file with metadata and a Python file with a bit of code.
+Posee varias herramientas necesarias para el optimo desarrollo de las actividades contratadas.
 
 ## Why?
 
