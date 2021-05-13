@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/plugins/mgtools" >
+        <file>icon.png</file>
+        <file>gui\icon\file_upload_black_24dp.svg</file>
+        <file>gui\icon\filter_alt_black_24dp.svg</file>
+        <file>gui\icon\transform_black_24dp.svg</file>
+        <file>gui\icon\launch_black_24dp.svg</file>
+        <file>gui\icon\style_black_24dp.svg</file>
+        <file>gui\icon\explore_black_24dp.svg</file>
+    </qresource>
+</RCC>
