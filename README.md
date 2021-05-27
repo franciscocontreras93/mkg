@@ -4,7 +4,7 @@ Complemento desarrollado por GeoSIG Consultoria. Para uso interno del proyecto O
 
 Posee varias herramientas necesarias para el optimo desarrollo de las actividades contratadas.
 
-## Why?
+<!-- ## Why?
 
 For educational purposes, it is useful to understand how a very basic plugin could look like.
 
@@ -22,4 +22,4 @@ so the code that actually does something is not hidden among generated boilerpla
 Now you should see a "Go!" button in your "Plugins" toolbar (make sure it is enabled in menu Settings > Toolbars > Plugins).
 
 The next step is to change the metadata (e.g. plugin title and description) in ```metadata.txt``` and
-start adding your own code to ```__init__.py```. Have fun!
+start adding your own code to ```__init__.py```. Have fun! -->

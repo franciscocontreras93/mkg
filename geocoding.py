@@ -10,7 +10,7 @@ from geopy.geocoders import Here, Nominatim, OpenMapQuest, GoogleV3
 from tqdm import tqdm
 import time
 
-os.chdir(r"F:\FRANCISCO\GIS\ISMAEL\BASES 2021\GEOCODING")
+os.chdir(r"C:\Users\FRANCISCO\Desktop\geocoding")
 all_filenames = [i for i in glob.glob('*.{}'.format('xlsx'))]
 
 mapquest_api_key = "ICyLfqteowXxftrsVWt4SpGIeycWVUXJ" # APIKEY MAPQUEST
