@@ -71,9 +71,8 @@ class exportDialog(QtWidgets.QDialog, export_csv_form):
         self.pushButton.clicked.connect(self.select_output_file)
 
     def select_output_file(self):
-        file_name = self.comboBox.currentText()
-        filename, _filter = QFileDialog.getSaveFileName(
-          None, "Seleccionar ubicación del archivo:", file_name[0:4], '*.csv')
+        # file_name = self.comboBox.currentText()
+        filename = QFileDialog.getExistingDirectory(None, "Seleccionar ubicación del archivo:")
         self.lineEdit.setText(filename)
 class filterDialog(QtWidgets.QDialog, filter_form):
     def __init__(self, parent=None):

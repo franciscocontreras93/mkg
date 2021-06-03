@@ -30,7 +30,7 @@ from qgis.core import *
 from qgis.core import QgsProject 
 from PyQt5 import QtWidgets
 # python libraries
-import os.path
+import os
 import pandas as pd
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -211,9 +211,9 @@ class mgtools:
         vectorlayers = [layer for layer in layers if layer.type()
                       == QgsMapLayer.VectorLayer]
         self.dlg = exportDialog()
-        self.dlg.comboBox.clear()
+        # self.dlg.comboBox.clear()
         self.dlg.lineEdit.clear()
-        self.dlg.comboBox.addItems([layer.name() for layer in vectorlayers])
+        # self.dlg.comboBox.addItems([layer.name() for layer in vectorlayers])
         
         self.dlg.show()
         result = self.dlg.exec_()
@@ -273,14 +273,51 @@ class mgtools:
         except:
             self.iface.messageBar().pushMessage("Resultado:", "Error en la Ejecución ", level=2)
     def exportar(self):
-        self.layerName = str(self.dlg.comboBox.currentText())
-        self.layer2Export = QgsProject.instance().mapLayersByName(self.layerName)[0]
-        iface.setActiveLayer(self.layer2Export)
-        self.layer = iface.activeLayer()
-        self.path2csv = self.dlg.lineEdit.text()
-        QgsVectorFileWriter.writeAsVectorFormat(self.layer, self.path2csv, "utf-8", QgsCoordinateReferenceSystem(), "CSV")
-        #self.tools.export_as_csv(self.layer, self.path2csv)
-        iface.messageBar().pushMessage("Resultado:", f"Exportado Correctamente {self.layerName}", level=3)
+        # self.layerName = str(self.dlg.lineEdit.text())
+        os.chdir(self.dlg.lineEdit.text())
+        file_name = self.dlg.lineEdit_2.text()
+        layers = []
+        try:
+            for vLayer in iface.mapCanvas().layers():
+                layers.append(vLayer)
+                vLayerName = vLayer.name()
+                QgsVectorFileWriter.writeAsVectorFormat(vLayer, f"{vLayerName}.csv", "utf-8",
+                                                        vLayer.crs(), "CSV")
+        except:
+            pass
+
+        try:
+            extension = 'csv'
+            total = 0
+            all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
+            #combine all files in the list
+            for e in all_filenames:
+                total += 1
+
+            combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames])
+            #export to csv
+            print(f"Se combinaron un total de {total} elementos")
+            combined_csv.to_csv(f"{file_name}.csv", index=False, encoding='utf-8')
+        except:
+            pass
+
+
+
+
+
+
+
+
+
+
+
+        # self.layer2Export = QgsProject.instance().mapLayersByName(self.layerName)[0]
+        # iface.setActiveLayer(self.layer2Export)
+        # self.layer = iface.activeLayer()
+        # self.path2csv = self.dlg.lineEdit.text()
+        # QgsVectorFileWriter.writeAsVectorFormat(self.layer, self.path2csv, "utf-8", QgsCoordinateReferenceSystem(), "CSV")
+        # #self.tools.export_as_csv(self.layer, self.path2csv)
+        # iface.messageBar().pushMessage("Resultado:", f"Exportado Correctamente {self.layerName}", level=3)
     def filtrarTda(self):
         try:
             tiendaId = int(self.filterDlg.lineEdit.text())
@@ -348,8 +385,8 @@ class mgtools:
 
             for feature in layer.getFeatures():
                 attrs = {
-                    fields.indexFromName("LONGITUD"): feature.geometry().asPoint().x(),
-                    fields.indexFromName("LATITUD"): feature.geometry().asPoint().y()
+                    fields.indexFromName("longitud"): feature.geometry().asPoint().x(),
+                    fields.indexFromName("latitud"): feature.geometry().asPoint().y()
                 }
                 layer_provider.changeAttributeValues({feature.id(): attrs})
 
