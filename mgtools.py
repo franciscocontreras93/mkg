@@ -24,7 +24,7 @@
 from PyQt5.QtCore import QVariant
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon, QColor
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QInputDialog
 from qgis.utils import *
 from qgis.core import * 
 from qgis.core import QgsProject 
@@ -80,6 +80,14 @@ class mgtools:
         self.menu = self.tr(u'&Herramientas Marketing Group')
         self.mg_menu = QtWidgets.QMenu(self.tr(u'&MG Herramientas'))
         self.toolbar =  self.iface.addToolBar(u'Herramientas MG')
+
+        self.tdaLbl = QtWidgets.QLabel()
+        self.tdaLbl.setText("Cod. Tienda: ")
+        self.tdaLine = QtWidgets.QLineEdit()
+        self.tdaLine.setFixedWidth(50)
+
+
+        
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -155,7 +163,7 @@ class mgtools:
         update_path = ':/plugins/mgtools/gui/icon/explore_black_24dp.svg'
 
         transformar = self.add_action(transform_path, text=self.tr(
-            u'Transformar a CSV'), add_to_toolbar=True, callback=self.transform_run, parent=self.iface.mainWindow())
+            u'Transformar a CSV'), add_to_toolbar=True, callback=self.addCsvToMap, parent=self.iface.mainWindow())
         
         transformar.setShortcut('CTRL+7')
         
@@ -171,6 +179,8 @@ class mgtools:
 
         #open_file = self.add_action(open_path, text=self.tr(
         #    u'Abrir Proyecto'), add_to_toolbar=True, callback=self.openProject, parent=self.iface.#mainWindow())
+        self.toolbar.addWidget(self.tdaLbl)
+        self.toolbar.addWidget(self.tdaLine)
 
         # will be set False in run()
         #self.mg_menu.addAction(transformar)
@@ -211,10 +221,7 @@ class mgtools:
         vectorlayers = [layer for layer in layers if layer.type()
                       == QgsMapLayer.VectorLayer]
         self.dlg = exportDialog()
-        # self.dlg.comboBox.clear()
-        self.dlg.lineEdit.clear()
-        # self.dlg.comboBox.addItems([layer.name() for layer in vectorlayers])
-        
+        self.dlg.lineEdit.clear()      
         self.dlg.show()
         result = self.dlg.exec_()
         if result:
@@ -256,24 +263,40 @@ class mgtools:
             pass
         print(len(headers))
     def transformar(self):
-        try: 
-            file_path = self.transformDialog.lineEdit.text()
-            read_file = self.readExcel(file_path)
-            #self.fillComboLatLong(file_path)
-            #-----------------------#
-            _path = os.path.abspath(file_path)
-            output_path = os.path.dirname(_path)
-            _file_name = os.path.basename(_path)[:-5]
-            read_file.to_csv(f"{output_path}/{_file_name}.csv",index=None, header=True)
-            #latitud = self.transformDialog.latitud.text()
-            #longitud = self.transformDialog.longitud.text()
-            self.iface.messageBar().pushMessage("Resultado:",
-                                                f"Transformación Exitosa del archivo <a href='{output_path}'>{_file_name}</a>", level=3)
-            #self.addCsvToMap(file_path, latitud, longitud)
-        except:
-            self.iface.messageBar().pushMessage("Resultado:", "Error en la Ejecución ", level=2)
+        # path = self.transformDialog.lineEdit.text()
+        # excel_files = glob.glob(path)  # assume the path
+        # for excel in excel_files:
+        #     out = excel.split('.')[0]+'.csv'
+        #     # if only the first sheet is needed.
+        #     df = pd.read_excel(excel, engine="openpyxl")
+        #     df.to_csv(out)
+        #     os.remove(excel)
+        
+        
+        
+        
+        
+        
+        
+        
+        # try: 
+        #     file_path = self.transformDialog.lineEdit.text()
+        #     read_file = self.readExcel(file_path)
+        #     #self.fillComboLatLong(file_path)
+        #     #-----------------------#
+        #     _path = os.path.abspath(file_path)
+        #     output_path = os.path.dirname(_path)
+        #     _file_name = os.path.basename(_path)[:-5]
+        #     read_file.to_csv(f"{output_path}/{_file_name}.csv",index=None, header=True)
+        #     #latitud = self.transformDialog.latitud.text()
+        #     #longitud = self.transformDialog.longitud.text()
+        #     self.iface.messageBar().pushMessage("Resultado:",
+        #                                         f"Transformación Exitosa del archivo <a href='{output_path}'>{_file_name}</a>", level=3)
+        #     #self.addCsvToMap(file_path, latitud, longitud)
+        # except:
+        #     self.iface.messageBar().pushMessage("Resultado:", "Error en la Ejecución ", level=2)
+        pass
     def exportar(self):
-        # self.layerName = str(self.dlg.lineEdit.text())
         os.chdir(self.dlg.lineEdit.text())
         file_name = self.dlg.lineEdit_2.text()
         layers = []
@@ -283,6 +306,8 @@ class mgtools:
                 vLayerName = vLayer.name()
                 QgsVectorFileWriter.writeAsVectorFormat(vLayer, f"{vLayerName}.csv", "utf-8",
                                                         vLayer.crs(), "CSV")
+            iface.messageBar().pushMessage("Resultado:", f"Exportado Correctamente {self.layerName}", level=3)
+        
         except:
             pass
 
@@ -290,14 +315,12 @@ class mgtools:
             extension = 'csv'
             total = 0
             all_filenames = [i for i in glob.glob('*.{}'.format(extension))]
-            #combine all files in the list
             for e in all_filenames:
                 total += 1
-
             combined_csv = pd.concat([pd.read_csv(f) for f in all_filenames])
-            #export to csv
-            print(f"Se combinaron un total de {total} elementos")
             combined_csv.to_csv(f"{file_name}.csv", index=False, encoding='utf-8')
+            iface.messageBar().pushMessage(
+                "Resultado:", f"Se combinaron un total de {total} elementos", level=3)
         except:
             pass
 
@@ -319,27 +342,54 @@ class mgtools:
         # #self.tools.export_as_csv(self.layer, self.path2csv)
         # iface.messageBar().pushMessage("Resultado:", f"Exportado Correctamente {self.layerName}", level=3)
     def filtrarTda(self):
+        
         try:
+           
             tiendaId = int(self.filterDlg.lineEdit.text())
-            exp = f'"ID MG"={tiendaId}'      
+            exp = f""""ID MG" ={tiendaId}"""
+            exp2 = f""""5km" LIKE '%{tiendaId}%'"""
+            QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(), 'id_tda', tiendaId)
             iconLayer = QgsProject.instance().mapLayersByName("tda ched")[0]
-            labelLayer = QgsProject.instance().mapLayersByName("ETIQUETAS")[0]
+            cmpLayer = QgsProject.instance().mapLayersByName("COMPETIDORES 2KM")[0]
             iconLayer.setSubsetString(exp)
-            labelLayer.setSubsetString(exp)
+            cmpLayer.setSubsetString(exp2)
             iface.setActiveLayer(iconLayer)  # activar capa
             iface.zoomToActiveLayer()  # zoom a capa activa
+            iconLayer.setSubsetString("")
+            canvas = iface.mapCanvas()
+            canvas.zoomScale(35000)
+
         except: 
             self.iface.messageBar().pushMessage("Resultado:", "Debe Cargar el Proyecto ", level=2)
     def filtrarFolleto(self):
         try:
-            tiendaId = int(self.filterDlg.lineEdit.text())
-            exp = f'"ID MG"={tiendaId}'
+            answer = QInputDialog().getText(None, "Tienda", "Ingrese Nombre de Tienda:")
+            tiendaId = str(answer[0])
+            # tiendaId = int(self.filterDlg.lineEdit.text())
+            exp = f""""NOMBRE CHEDRAUI"  LIKE  '%{tiendaId.upper()}%'"""
+            #print(exp)
+            #expr  = QgsExpression(exp)
             iconLayer = QgsProject.instance().mapLayersByName("folleto ched")[0]
-            labelLayer = QgsProject.instance().mapLayersByName("ETIQUETAS")[0]
-            iconLayer.setSubsetString(exp)
-            labelLayer.setSubsetString('')
-            iface.setActiveLayer(iconLayer)  # activar capa
-            iface.zoomToActiveLayer()  # zoom a capa activa
+            iconLayer.selectByExpression(exp)
+            QgsExpressionContextUtils.setProjectVariable(
+                QgsProject.instance(), 'myvar', tiendaId.upper())
+            iface.actionZoomToSelected().trigger()
+            selected = capa.selectedFeatures()[0]
+
+
+            selected_id = selected[2]
+            exp_cmp = f""""cod_ched"  LIKE  '%{selected_id}%'"""
+
+            cmpLayer = QgsProject.instance().mapLayersByName("COMPETIDORES 2KM")[0]
+            cmpLayer.setSubsetString(exp_cmp)
+
+
+            # labelLayer = QgsProject.instance().mapLayersByName("ETIQUETAS")[0]
+            # iconLayer.setSubsetString(exp)
+            #labelLayer.setSubsetString('')
+            #iface.setActiveLayer(iconLayer)  # activar capa
+            #iface.zoomToActiveLayer()  # zoom a capa activa
+
             iface.mapCanvas().zoomScale(35000.0)
         except:
             self.iface.messageBar().pushMessage(
@@ -356,12 +406,52 @@ class mgtools:
         #uri = r'F:/FRANCISCO/GIS/ISMAEL/ESTRATEGICO/PROYECTO 2020.qgz'
         #QgsProject.instance().read(uri)
         pass
-    def addCsvToMap(self,csv_path,latitud,longitud):
-        uri = f'file:///{csv_path}?encoding=UTF-8&delimiter=,&yField={latitud}&xField={longitud}'
-        "file:///C:/Users/FRANCISCO/Downloads/Telegram%20Desktop/1055-NEZA%20IMPULSORA_RE_OKI%20(2).csv?encoding=System&type=csv&detectTypes=yes&decimalPoint=,&xField=LONGITTUD&yField=LATITUD&crs=EPSG:4686&spatialIndex=no&subsetIndex=no&watchFile=yes"
-        layer = QgsVectorLayer(uri, 'test', 'delimitedtext')
-        QgsProject.instance().addMapLayer(layer)
-        print(layer.isValid())
+    def addCsvToMap(self):
+        answer = QInputDialog().getText(None, "Información:", "Ingresa el nombre del archivo CSV")
+        fileName = answer[0]
+        pathToCsv = f'C:/ISMAEL/entregas/{fileName}.csv'
+        GpName = r'C:/ISMAEL/2021 FOLLETO.gpkg'
+        xField = 'longitud'
+        yField = 'latitud'
+        uri = f"file:///{pathToCsv}?encoding=utf-8&type=csv&maxFields=10000&detectTypes=yes&decimalPoint=,&xField={xField}&yField={yField}&crs=EPSG:4686&spatialIndex=no&subsetIndex=no&watchFile=yes"
+        csv_layer = QgsVectorLayer(uri, fileName, 'delimitedtext')
+        layer = csv_layer
+
+        done = 'Proceso Exitoso'
+        error = 'Error'
+
+        #QgsProject.instance().addMapLayer(csv_layer)
+        #iface.setActiveLayer(csv_layer)
+        #layer = iface.activeLayer()
+        # agregar capa csv geografica a geopackage
+        if layer.isValid():
+            try:
+                options = QgsVectorFileWriter.SaveVectorOptions()
+                options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteLayer  # Update mode
+                options.EditionCapability = QgsVectorFileWriter.CanAddNewLayer
+                options.layerName = layer.name()
+
+                _writer = QgsVectorFileWriter.writeAsVectorFormat(
+                    layer, GpName, options)
+                if _writer[0] == QgsVectorFileWriter.ErrCreateDataSource:
+                    #print("Create mode")
+                    options.actionOnExistingFile = QgsVectorFileWriter.CreateOrOverwriteFile  # Create mode
+                    _writer = QgsVectorFileWriter.writeAsVectorFormat(
+                        layer, GpName, options)
+                print(done)
+            except:
+                print(error)
+        # llamada a capa desde el geopackage al mapa
+        try:
+
+            layer_gpkg = GpName + f'|layername={fileName}'
+            layer = QgsVectorLayer(layer_gpkg, fileName, 'ogr')
+            if not layer.isValid():
+                print('Error de Capa')
+            else:
+                QgsProject.instance().addMapLayer(layer)
+        except:
+            print('Algo Salio Mal')
     
     def updateCoordinates(self):
         # imports
@@ -431,3 +521,4 @@ class mgtools:
         
         pass
 #----------------------------------------------------------------------#
+# QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'myvar','AJUSCO')

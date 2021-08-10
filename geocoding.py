@@ -5,21 +5,17 @@ import os
 import glob
 import pandas as pd
 import unidecode
-
 from geopy.geocoders import Here, Nominatim, OpenMapQuest, GoogleV3
 from tqdm import tqdm
 import time
 
 os.chdir(r"C:\Users\FRANCISCO\Desktop\geocoding")
 all_filenames = [i for i in glob.glob('*.{}'.format('xlsx'))]
-
 mapquest_api_key = "ICyLfqteowXxftrsVWt4SpGIeycWVUXJ" # APIKEY MAPQUEST
 here_app_id = "gDYP3rI1xGkpcY4Xmr13" # APP ID HERE TECHNOLOGY
 here_api_key = "sY9mFdYg4L-vkiS6n8BZmAV8Y_2fENdhd8fPT9WWngk"  # API KEY HERE TECHNOLOGY 
 google_api_key = "AIzaSyDeAxeJFDKW0vkYODqmnVevH3ZLYWgvU2w"  # API KEY GOOGLE
-
 # GEOCODERS #
-
 nominatim = Nominatim(user_agent="franciscocontreras93@gmail.com")
 here = Here(apikey=here_api_key)
 mapquest = OpenMapQuest(api_key=mapquest_api_key)
@@ -32,12 +28,6 @@ geocoders = [here, nominatim, mapquest, googlev3]  # ,here,mapquest, googlev3
 # codec2 ="utf8"
 
 print(""" ESTE PROGRAMA ESTA DESARROLADO PARA USO EXCLUSIVO DE GEOSIG /n""")
-
-
-
-
-
-
 
 file_name = input("ingrese el nombre del archivo:   ")
 file = f"{file_name}.xlsx"

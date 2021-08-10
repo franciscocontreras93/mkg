@@ -54,8 +54,8 @@ class transformDialog(QtWidgets.QDialog, transform_csv_form):
         
     
     def select_input_file(self):
-        filename, _filter = QFileDialog.getOpenFileName(
-            None, "Seleccionar ubicación del archivo:", "", 'Archivo Excel (*.xlsx)')
+        filename = QFileDialog.getExistingDirectory(
+            None, "Seleccionar ubicación de Archivos:")
         self.lineEdit.setText(filename)
 class exportDialog(QtWidgets.QDialog, export_csv_form):
     def __init__(self, parent=None):
