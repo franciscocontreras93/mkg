@@ -7,5 +7,6 @@
         <file>gui\icon\launch_black_24dp.svg</file>
         <file>gui\icon\style_black_24dp.svg</file>
         <file>gui\icon\explore_black_24dp.svg</file>
+        <file>gui\icon\search_black_24dp.svg</file>
     </qresource>
 </RCC>

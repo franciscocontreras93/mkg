@@ -34,8 +34,6 @@ transform_csv_form, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'gui/transform_csv_dialog.ui'))
 export_csv_form, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'gui/export_csv_dialog.ui'))
-filter_form, _ = uic.loadUiType(os.path.join(
-    os.path.dirname(__file__), 'gui/filter_tda_dialog.ui'))
 class_form, _ = uic.loadUiType(os.path.join(
     os.path.dirname(__file__), 'gui/class_dialog.ui'))
   
@@ -71,22 +69,9 @@ class exportDialog(QtWidgets.QDialog, export_csv_form):
         self.pushButton.clicked.connect(self.select_output_file)
 
     def select_output_file(self):
-        # file_name = self.comboBox.currentText()
         filename = QFileDialog.getExistingDirectory(None, "Seleccionar ubicación del archivo:")
         self.lineEdit.setText(filename)
-class filterDialog(QtWidgets.QDialog, filter_form):
-    def __init__(self, parent=None):
-        """Constructor."""
-        super(filterDialog, self).__init__(parent)
-        # Set up the user interface from Designer through FORM_CLASS.
-        # After self.setupUi() you can access any designer object by doing
-        # self.<objectname>, and you can use autoconnect slots - see
-        # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
-        # #widgets-and-dialogs-with-auto-connect
 
-        self.setupUi(self)
-
-        #self.pushButton.clicked.connect(self.select_output_file)
 class classDialog(QtWidgets.QDialog, class_form):
     def __init__(self, parent=None):
         """Constructor."""

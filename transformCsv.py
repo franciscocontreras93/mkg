@@ -8,6 +8,6 @@ excel_files = glob.glob(
 for excel in excel_files:
     out = excel.split('.')[0]+'.csv'
     # if only the first sheet is needed.
-    df = pd.read_excel(excel, sheet_name="Hoja1", engine="openpyxl")
+    df = pd.read_excel(excel, sheet_name=0, engine="openpyxl")
     df.to_csv(out)
     os.remove(excel)
