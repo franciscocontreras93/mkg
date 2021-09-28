@@ -171,12 +171,15 @@ class mgtools:
 
         icon_path = ':/plugins/mgtools/icon.png'
         transform_path = ':/plugins/mgtools/gui/icon/transform_black_24dp.svg'
+        swap_path = ':/plugins/mgtools/gui/icon/map_black_24dp.svg'
         export_path = ':/plugins/mgtools/gui/icon/file_upload_black_24dp.svg'
         filter_path = ':/plugins/mgtools/gui/icon/filter_alt_black_24dp.svg'
         style_path = ':/plugins/mgtools/gui/icon/style_black_24dp.svg'
         update_path = ':/plugins/mgtools/gui/icon/explore_black_24dp.svg'
         search_path = ':/plugins/mgtools/gui/icon/search_black_24dp.svg'
 
+        swap = self.add_action(swap_path, text=self.tr(
+            u'swap'), add_to_toolbar=True, callback=self.swap, parent=self.iface.mainWindow())
         transformar = self.add_action(transform_path, text=self.tr(
             u'Transformar a CSV'), add_to_toolbar=True, callback=self.addCsvToMap, parent=self.iface.mainWindow())
         
@@ -420,18 +423,26 @@ class mgtools:
         else:       
             symbol = QgsSymbol.defaultSymbol(layer.geometryType())
             renderer = QgsRuleBasedRenderer(symbol)
-            
+            symbolProps = {
+                           'color': 'black',
+                           'name': 'circle',
+                           'outline_style': 'no',
+                           'size': '1.5',
+                           }
+            symbol = QgsMarkerSymbol.createSimple(symbolProps)
+
             root_rule = renderer.rootRule()        
             else_rule = root_rule.children()[0]
             else_rule.setFilterExpression('ELSE')
-            #else_rule.symbol().setColor(QColor('black'))
+            else_rule.setSymbol(symbol)
+            props = else_rule.symbol().symbolLayer(0).properties()
+            print(props)
             
 
             for e in arr:
                 expresion = f'"p14_1" = {e} or "p14_2" = {e} or "p14_3" = {e}'
                 rule = root_rule.children()[0].clone()
-                rule.setFilterExpression(expresion)
-                
+                rule.setFilterExpression(expresion)                
                 root_rule.appendChild(rule)
 
             layer.setRenderer(renderer)
@@ -441,5 +452,22 @@ class mgtools:
     def mensajes(self,title,cadena,lvl):
         iface.messageBar().pushMessage(title,cadena, level = lvl)
         pass
+
+    def swap(self):
+        satLyr = self.project.mapLayersByName("Google Satellite")[0]
+        mapsLyr = self.project.mapLayersByName("Google Maps (Alternative rendering)")[0]
+        nodeSat = self.layerTreeRoot.findLayer(satLyr)
+        nodeMap = self.layerTreeRoot.findLayer(mapsLyr)
+
+
+        #nodeSat.setItemVisibilityChecked(False)
+        if nodeSat and nodeMap:
+            if nodeSat.isVisible():
+                nodeSat.setItemVisibilityChecked(False)
+                nodeMap.setItemVisibilityChecked(True)
+            elif not nodeSat.isVisible():
+                nodeSat.setItemVisibilityChecked(True)
+                nodeMap.setItemVisibilityChecked(False)
+
 #----------------------------------------------------------------------#
 # QgsExpressionContextUtils.setProjectVariable(QgsProject.instance(),'myvar','AJUSCO')
