@@ -187,8 +187,10 @@ class mgtools:
         
         exportar = self.add_action(export_path,text=self.tr(
             u'Exportar a CSV'), add_to_toolbar=True, callback=self.export_run, parent=self.iface.mainWindow())
-        estilo = self.add_action(style_path, text=self.tr(
-            u'Filtrar Tienda'), add_to_toolbar=True, callback=self.class_run, parent=self.iface.mainWindow())
+        classP2 = self.add_action(style_path, text=self.tr(
+            u'MAPA PIE'), add_to_toolbar=True, callback=self.classP2_run, parent=self.iface.mainWindow())
+        classP14 = self.add_action(style_path, text=self.tr(
+            u'MAPA FOLLETO'), add_to_toolbar=True, callback=self.classP14_run, parent=self.iface.mainWindow())
         coordenadas = self.add_action(update_path, text=self.tr(
             u'Actualizar Coordenadas'), add_to_toolbar=True, callback=self.updateCoordinates, parent=self.iface.mainWindow())
 
@@ -231,11 +233,16 @@ class mgtools:
         #tda_check = self.filterDlg.tda.isChecked()
         #folleto_check = self.filterDlg.folleto.isChecked()        
         self.filterDlg.pushButton.clicked.connect(self.check) 
-    def class_run(self):
+    def classP14_run(self):
         self.classDlg = classDialog()
         self.classDlg.show()
         
         self.classDlg.pushButton.clicked.connect(self.p14_class)
+    def classP2_run(self):
+        self.classDlg = classDialog()
+        self.classDlg.show()
+        
+        self.classDlg.pushButton.clicked.connect(self.p2_class)
 
 #----------------------------------------------------------------------#  
 
@@ -449,6 +456,49 @@ class mgtools:
             layer.triggerRepaint()
             iface.layerTreeView().refreshLayerSymbology(layer.id())
             pass
+
+    def p2_class(self):
+        layer = iface.activeLayer()
+        # print(layer.name())
+        tdaLayer = self.project.mapLayersByName("tda ched")[0]
+        cmpLayer = self.project.mapLayersByName("COMPETIDORES 2KM")[0]
+        valor = self.classDlg.lineEdit.text()
+        arr = valor.split(";")
+
+        if layer.name() == tdaLayer.name() or layer.name() == cmpLayer.name():
+
+           self.mensajes("error", "SELECCIONA OTRA CAPA", 2)
+           pass
+        else:
+            symbol = QgsSymbol.defaultSymbol(layer.geometryType())
+            renderer = QgsRuleBasedRenderer(symbol)
+            symbolProps = {
+                'color': 'black',
+                'name': 'circle',
+                'outline_style': 'no',
+                'size': '1.5',
+            }
+            symbol = QgsMarkerSymbol.createSimple(symbolProps)
+
+            root_rule = renderer.rootRule()
+            else_rule = root_rule.children()[0]
+            else_rule.setFilterExpression('ELSE')
+            else_rule.setSymbol(symbol)
+            props = else_rule.symbol().symbolLayer(0).properties()
+            print(props)
+
+            for e in arr:
+                expresion = f'"p2" = {e}'
+                rule = root_rule.children()[0].clone()
+                rule.setFilterExpression(expresion)
+                root_rule.appendChild(rule)
+
+            layer.setRenderer(renderer)
+            layer.triggerRepaint()
+            iface.layerTreeView().refreshLayerSymbology(layer.id())
+            pass
+    
+    
     def mensajes(self,title,cadena,lvl):
         iface.messageBar().pushMessage(title,cadena, level = lvl)
         pass
