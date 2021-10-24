@@ -24,7 +24,7 @@
 from PyQt5.QtCore import QVariant
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon, QColor
-from qgis.PyQt.QtWidgets import QAction, QInputDialog
+from qgis.PyQt.QtWidgets import QAction, QInputDialog, QMenu
 from qgis.utils import *
 from qgis.core import * 
 from qgis.core import QgsProject 
@@ -322,7 +322,7 @@ class mgtools:
         answer = QInputDialog().getText(None, "Información:", "Ingresa el nombre del archivo CSV")
         fileName = answer[0]
         pathToCsv = f'C:/ISMAEL/entregas/{fileName}.csv'
-        GpName = r'C:/ISMAEL/2021 FOLLETO.gpkg'
+        GpName = r'C:/ISMAEL/2021 TDA.gpkg'
         xField = 'longitud'
         yField = 'latitud'
         uri = f"file:///{pathToCsv}?encoding=utf-8&type=csv&maxFields=10000&detectTypes=yes&decimalPoint=,&xField={xField}&yField={yField}&crs=EPSG:4686&spatialIndex=no&subsetIndex=no&watchFile=yes"
@@ -366,6 +366,14 @@ class mgtools:
                 print('Error de Capa')
             else:
                 QgsProject.instance().addMapLayer(layer)
+                request = QgsFeatureRequest().setFilterExpression('"Folio" is null')
+                layer.startEditing()
+                for f in layer.getFeatures(request):
+                    
+                    layer.deleteFeature(f.id())
+
+                layer.commitChanges()
+
         except:
             print('Algo Salio Mal')   
     def updateCoordinates(self):
